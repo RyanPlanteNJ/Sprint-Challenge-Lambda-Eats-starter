@@ -24,17 +24,17 @@ export default function PizzaForm() {
         special: "",
     });
 
-    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
     const formSchema = yup.object().shape({
         name: yup.string()
               .required("Need name in order to submit order"),
         size: yup.string(),
         special: yup.string(),
-        pepperoni: yup.boolean(),
-        pineapple : yup.boolean(),
-        bacon: yup.boolean(),
-        peppers: yup.boolean(),
+        pepperoni: yup.mixed(),
+        pineapple: yup.mixed(),
+        bacon: yup.mixed(),
+        peppers: yup.mixed() 
     });
 
     const validateChange = event => {
@@ -44,7 +44,7 @@ export default function PizzaForm() {
         .then(valid => {
             setErrors({...errors,[event.target.name]: "" });
         })
-        .catch(err => setErrors({...errors, [event.target.ane]: err.errors[0]}));
+        .catch(err => setErrors({...errors, [event.target.name]: err.errors[0]}));
     };
 
     useEffect(() => {
@@ -114,11 +114,12 @@ export default function PizzaForm() {
             </label>
             <div className="toppings">
                 <h1>Toppings</h1>
-                <label htmlFor="toppings">
+                <label htmlFor="checkbox">
                     <input 
                         id="pepperoni"
                         type="checkbox"
                         name="pepperoni"
+                        data-cy="pepperoni"
                         onChange={inputChange}
                         checked={formState.pepperoni}
                     /> Pepperoni
@@ -126,6 +127,7 @@ export default function PizzaForm() {
                         id="bacon"
                         type="checkbox"
                         name="bacon"
+                        data-cy="bacon"
                         onChange={inputChange}
                         checked={formState.bacon}
                     /> Bacon
@@ -133,6 +135,7 @@ export default function PizzaForm() {
                         id="pineapple"
                         type="checkbox"
                         name="pineapple"
+                        data-cy="pineapple"
                         onChange={inputChange}
                         checked={formState.pineapple}
                     /> Pineapple
@@ -140,6 +143,7 @@ export default function PizzaForm() {
                         id="peppers"
                         type="checkbox"
                         name="peppers"
+                        data-cy="peppers"
                         onChange={inputChange}
                         checked={formState.peppers}
                     /> Peppers
