@@ -2,30 +2,39 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import * as yup from 'yup';
 
-export default function Form() {
+export default function PizzaForm() {
     const [post, setPost] = useState([]);
     const [formState, setFormState] = useState({
         name: "",
         size: "",
-        toppings: "",
+        pepperoni:"",
+        pineapple: "",
+        bacon:"",
+        peppers: "",
         special: "",
     });
 
     const [errors, setErrors] = useState({
         name: "",
         size: "",
-        toppings: "",
+        pepperoni:"",
+        pineapple: "",
+        bacon:"",
+        peppers: "",
         special: "",
     });
 
-    const[isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
     const formSchema = yup.object().shape({
         name: yup.string()
-            .test('len', 'Must be at least 2 characters', val => val.toString().length >= 2)
-            .required("Need name in order to submit order"),
+              .required("Need name in order to submit order"),
         size: yup.string(),
-        special: yup.string()
+        special: yup.string(),
+        pepperoni: yup.boolean(),
+        pineapple : yup.boolean(),
+        bacon: yup.boolean(),
+        peppers: yup.boolean(),
     });
 
     const validateChange = event => {
@@ -40,6 +49,7 @@ export default function Form() {
 
     useEffect(() => {
         formSchema.isValid(formState).then(valid => {
+            console.log("valid?", valid);
             setIsButtonDisabled(!valid);
         });
     }, [formState]);
@@ -47,17 +57,20 @@ export default function Form() {
     const formSubmit = event => {
         event.preventDefault();
         axios
-            .post("https://reqres.in/api/users")
+            .post("https://reqres.in/api/users", formState)
             .then(response => {
                 setPost(response.data);
                 setFormState({
-                    name: "",
-                    size: "",
-                    toppings: "",
-                    special: "",
+                      name: "",
+                      size: "",
+                      pepperoni:"",
+                      pineapple: "",
+                      bacon:"",
+                      peppers: "",
+                      special: "",
                 });
             })
-            .catch(err => console.log(err.respone));
+            .catch(err => console.log(err.response));
 
     };
 
@@ -86,6 +99,68 @@ export default function Form() {
                 />
                 {errors.name.length > 0 ? <p className="error">{errors.name}</p> : null}
             </label>
+            
+            <label htmlFor="size">
+                Size:
+                <select
+                    id="size"
+                    name="size"
+                    onChange={inputChange}>
+                    <option value ="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                </select>
+                {errors.size.length > 0 ? (<p className="error">{errors.size}</p>) : null}
+            </label>
+            <div className="toppings">
+                <h1>Toppings</h1>
+                <label htmlFor="toppings">
+                    <input 
+                        id="pepperoni"
+                        type="checkbox"
+                        name="pepperoni"
+                        onChange={inputChange}
+                        checked={formState.pepperoni}
+                    /> Pepperoni
+                      <input 
+                        id="bacon"
+                        type="checkbox"
+                        name="bacon"
+                        onChange={inputChange}
+                        checked={formState.bacon}
+                    /> Bacon
+                      <input 
+                        id="pineapple"
+                        type="checkbox"
+                        name="pineapple"
+                        onChange={inputChange}
+                        checked={formState.pineapple}
+                    /> Pineapple
+                      <input 
+                        id="peppers"
+                        type="checkbox"
+                        name="peppers"
+                        onChange={inputChange}
+                        checked={formState.peppers}
+                    /> Peppers
+                </label>
+            </div>
+            <label htmlFor="special">
+                Please Enter Any Special Requests
+                <textarea
+                    name="special"
+                    onChange={inputChange}
+                    value={formState.special}
+                />
+                {errors.special.length > 0 ? (
+                    <p className="error">{errors.special}</p>
+                ) : null }
+            </label>
+            
+            <button disabled={isButtonDisabled} type ="submit">
+                Place Order
+            </button>
+            <pre>{JSON.stringify(post,null,2)}</pre>
         </form>
     )
 }
